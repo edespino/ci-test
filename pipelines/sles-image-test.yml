@@ -1,0 +1,191 @@
+## ======================================================================
+
+groups:
+
+## ======================================================================
+
+resources:
+
+- name: ci-src
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/edespino/ci-test.git
+
+- name: sles-gpdb-dev-priv-11
+  type: docker-image
+  source:
+    username: {{docker-username}}
+    password: {{docker-password}}
+    repository: pivotaldata/sles-gpdb-dev-priv
+    tag: '11'
+
+- name: centos-gpdb-dev-7
+  type: docker-image
+  source:
+    repository: pivotaldata/centos-gpdb-dev
+    tag: 7-gcc6.2-llvm3.7
+
+## ======================================================================
+
+job_anchor: &job_definition
+  plan:
+  ## --------------------------------------------------------------------
+
+  - get: ci-src
+
+  ## --------------------------------------------------------------------
+
+  - get: centos-gpdb-dev-7
+  - task: run-centos-task-1
+    image: centos-gpdb-dev-7
+    config:
+      platform: linux
+      inputs:
+        - name: ci-src
+      outputs:
+        - name: job_artifacts
+      run:
+        path: bash
+        args:
+          - -c
+          - |
+            echo "======================================================================"
+            cat /etc/redhat-release
+            echo "----------------------------------------------------------------------"
+            ls -al
+            echo "----------------------------------------------------------------------"
+            date >> job_artifacts/date
+            ls job_artifacts/date
+            echo "----------------------------------------------------------------------"
+            cat job_artifacts/date
+            echo "======================================================================"
+            echo ""
+
+  ## --------------------------------------------------------------------
+
+  - task: run-sles-task-1
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          username: {{docker-username}}
+          password: {{docker-password}}
+          repository: pivotaldata/sles-gpdb-dev-priv
+          tag: '11'
+      inputs:
+        - name: ci-src
+      outputs:
+        - name: job_artifacts
+      run:
+        path: bash
+        args:
+          - -c
+          - |
+            echo "======================================================================"
+            cat /etc/os-release
+            echo "----------------------------------------------------------------------"
+            ls -al
+            echo "----------------------------------------------------------------------"
+            date >> job_artifacts/date
+            ls job_artifacts/date
+            echo "----------------------------------------------------------------------"
+            cat job_artifacts/date
+            echo "======================================================================"
+            echo ""
+
+  ## --------------------------------------------------------------------
+
+  - get: sles-gpdb-dev-priv-11
+  - task: run-sles-task-2
+    image: sles-gpdb-dev-priv-11
+    config:
+      platform: linux
+      inputs:
+        - name: ci-src
+      outputs:
+        - name: job_artifacts
+      run:
+        path: bash
+        args:
+          - -c
+          - |
+            echo "======================================================================"
+            cat /etc/os-release
+            echo "----------------------------------------------------------------------"
+            ls -al
+            echo "----------------------------------------------------------------------"
+            date >> job_artifacts/date
+            ls job_artifacts/date
+            echo "----------------------------------------------------------------------"
+            cat job_artifacts/date
+            echo "======================================================================"
+            echo ""
+
+
+## ======================================================================
+
+jobs:
+
+- name: job-00
+  <<: *job_definition
+
+- name: job-01
+  <<: *job_definition
+
+- name: job-02
+  <<: *job_definition
+
+- name: job-03
+  <<: *job_definition
+
+- name: job-04
+  <<: *job_definition
+
+- name: job-05
+  <<: *job_definition
+
+- name: job-06
+  <<: *job_definition
+
+- name: job-07
+  <<: *job_definition
+
+- name: job-08
+  <<: *job_definition
+
+- name: job-09
+  <<: *job_definition
+
+- name: job-10
+  <<: *job_definition
+
+- name: job-11
+  <<: *job_definition
+
+- name: job-12
+  <<: *job_definition
+
+- name: job-13
+  <<: *job_definition
+
+- name: job-14
+  <<: *job_definition
+
+- name: job-15
+  <<: *job_definition
+
+- name: job-16
+  <<: *job_definition
+
+- name: job-17
+  <<: *job_definition
+
+- name: job-18
+  <<: *job_definition
+
+- name: job-19
+  <<: *job_definition
+
+## ======================================================================
